@@ -650,10 +650,24 @@ class _TileLayerState extends State<TileLayer> with TickerProviderStateMixin {
     }
   }
 
-  /// Rounds the zoom to the nearest int and clamps it to the native zoom limits
-  /// if there are any.
-  int _clampToNativeZoom(double zoom) =>
-      zoom.round().clamp(widget.minNativeZoom, widget.maxNativeZoom);
+  // Rounds the zoom to the nearest int and clamps it to the native zoom limits
+  // if there are any.
+  int _clampToNativeZoom(double zoom) {
+    zoom += 0.5;
+
+    int result = zoom.round();
+
+    if (widget.minNativeZoom != null) {
+      result = math.max(result, widget.minNativeZoom!);
+    }
+    if (widget.maxNativeZoom != null) {
+      result = math.min(result, widget.maxNativeZoom!);
+    }
+
+    if (result > 16) result = 16;
+
+    return result;
+  }
 
   void _onTileLoadError(TileImage tile, Object error, StackTrace? stackTrace) {
     debugPrint(error.toString());
